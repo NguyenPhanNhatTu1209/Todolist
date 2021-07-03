@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CreateToDoScreen extends StatefulWidget {
@@ -9,6 +10,8 @@ class CreateToDoScreen extends StatefulWidget {
 }
 
 class _CreateToDoScreenState extends State<CreateToDoScreen> {
+  String title = "";
+  String subTitle = "";
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -25,14 +28,56 @@ class _CreateToDoScreenState extends State<CreateToDoScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             TextField(
+              onChanged: (text) {
+                setState(() {
+                  title = text.trim();
+                });
+              },
               decoration: InputDecoration(labelText: 'Title'),
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
             TextField(
+              onChanged: (text) {
+                setState(() {
+                  subTitle = text.trim();
+                });
+              },
               decoration: InputDecoration(labelText: 'SubTitle'),
               style: TextStyle(fontSize: 14, color: Colors.black),
             ),
-            Padding(padding: const EdgeInsets.symmetric(vertical: 10)),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () async {
+                await FirebaseFirestore.instance.collection('todos').add({
+                  "title": title,
+                  "subTitle": subTitle,
+                  "status": "DOING",
+                  "createdAt": DateTime.now(),
+                });
+                // Navigator.of(context).pop();
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(
+                            'https://duhocvietglobal.com/wp-content/uploads/2018/12/dat-nuoc-va-con-nguoi-anh-quoc.jpg'),
+                        fit: BoxFit.cover),
+                    color: Colors.blue,
+                    border: Border.all(color: Colors.yellow, width: 2),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'Add Task',
+                  style: TextStyle(fontSize: 20, color: Colors.red),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
@@ -56,7 +101,9 @@ class _CreateToDoScreenState extends State<CreateToDoScreen> {
                       primary: Colors.white,
                       textStyle: const TextStyle(fontSize: 16),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      print('button');
+                    },
                     child: const Text('Add Task'),
                   ),
                 ],
