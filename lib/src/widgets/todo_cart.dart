@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:todolist/models/todo.dart';
 
 class ToDoCart extends StatefulWidget {
-  final data;
+  final ToDo todo;
   final index;
-  ToDoCart({required this.data, required this.index});
+  ToDoCart({required this.todo, required this.index});
   @override
   State<StatefulWidget> createState() {
     return _ToDoCart();
@@ -18,7 +18,6 @@ class _ToDoCart extends State<ToDoCart> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    todo = ToDo.fromFirestore(widget.data);
   }
 
   doneTask() async {
@@ -42,6 +41,7 @@ class _ToDoCart extends State<ToDoCart> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.blue.shade200, width: 2)),
       padding: EdgeInsets.only(left: 24, right: 8),
+      margin: EdgeInsets.only(top: 8),
       child: Row(
         children: [
           Container(
@@ -58,7 +58,7 @@ class _ToDoCart extends State<ToDoCart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  todo!.title,
+                  widget.todo.title,
                   style: TextStyle(
                     color: Colors.redAccent,
                     fontSize: 15,
@@ -66,7 +66,7 @@ class _ToDoCart extends State<ToDoCart> {
                   ),
                 ),
                 Text(
-                  todo!.subTitle,
+                  widget.todo.subTitle,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                 ),
               ],

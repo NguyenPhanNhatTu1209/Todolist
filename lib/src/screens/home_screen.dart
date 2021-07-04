@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todolist/models/todo.dart';
 import 'package:todolist/src/screens/create_todo_screen.dart';
+import 'package:todolist/src/screens/edit_todo_screen.dart';
+import 'package:todolist/src/screens/history_screen.dart';
 import 'package:todolist/src/widgets/todo_cart.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,6 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.blueAccent,
       ),
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => HistoryScreen())),
+              icon: Icon(
+                Icons.list,
+                color: Colors.white,
+                size: 30.0,
+              ))
+        ],
         title: Text(
           'ToDoList',
           style: TextStyle(fontSize: 20),
@@ -50,9 +62,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.only(top: 10),
                       itemCount: data.length,
                       itemBuilder: (context, index) {
-                        return ToDoCart(
-                          data: data[index],
-                          index: data[index].reference,
+                        return GestureDetector(
+                          onTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => EditToDoScreen(
+                                        index: data[index].reference,
+                                        title: data[index]['title'],
+                                        subTitle: data[index]['subTitle'],
+                                      ))),
+                          child: ToDoCart(
+                            todo: ToDo.fromFirestore(data[index]),
+                            index: data[index].reference,
+                          ),
                         );
                       });
                 }
