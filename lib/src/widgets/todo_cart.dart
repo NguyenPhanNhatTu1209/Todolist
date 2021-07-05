@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todolist/models/todo.dart';
+import 'package:todolist/src/controllers/todo_controller.dart';
 
 class ToDoCart extends StatefulWidget {
-  final data;
-  final index;
-  ToDoCart({required this.data, required this.index});
+  final ToDo todo;
+  final VoidCallback getTodo;
+  ToDoCart({required this.todo, required this.getTodo});
   @override
   State<StatefulWidget> createState() {
     return _ToDoCart();
@@ -13,29 +13,25 @@ class ToDoCart extends StatefulWidget {
 }
 
 class _ToDoCart extends State<ToDoCart> {
-  ToDo? todo;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    todo = ToDo.fromFirestore(widget.data);
-  }
-
+  TodoController todoController = TodoController();
   doneTask() async {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.update(widget.index, {'status': 'DONE'});
-    });
+    await todoController.done(widget.todo.id);
+    widget.getTodo();
   }
 
   cancelTask() async {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.update(widget.index, {'status': 'CANCEL'});
-    });
+    await todoController.delete(widget.todo.id);
+    widget.getTodo();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.todo.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       decoration: BoxDecoration(
           color: Colors.lightBlue[50],
@@ -58,7 +54,7 @@ class _ToDoCart extends State<ToDoCart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  todo!.title,
+                  widget.todo.title,
                   style: TextStyle(
                     color: Colors.redAccent,
                     fontSize: 15,
@@ -66,7 +62,7 @@ class _ToDoCart extends State<ToDoCart> {
                   ),
                 ),
                 Text(
-                  todo!.subTitle,
+                  widget.todo.subTitle,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                 ),
               ],
