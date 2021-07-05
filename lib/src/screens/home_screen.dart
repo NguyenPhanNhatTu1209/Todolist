@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todolist/models/todo.dart';
+import 'package:todolist/src/Controllers/todo_controller.dart';
 import 'package:todolist/src/screens/create_todo_screen.dart';
 import 'package:todolist/src/screens/edit_todo_screen.dart';
 import 'package:todolist/src/screens/history_screen.dart';
@@ -15,6 +16,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TodoController todoController = TodoController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    todoController.getToDo();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -47,17 +56,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Container(
           child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('todos')
-                  .where('status', isEqualTo: 'DOING')
-                  .orderBy('createdAt')
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              stream: todoController.getToDoStream,
+              builder: (context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
-                  return Container();
+                  return Container(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 } else {
-                  var data = snapshot.data!.docs;
-                  print('TuData: ' + data[0]['title'].toString());
+                  List<ToDo> data = snapshot.data;
                   return ListView.builder(
                       padding: EdgeInsets.only(top: 10),
                       itemCount: data.length,
@@ -66,13 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () =>
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => EditToDoScreen(
-                                        index: data[index].reference,
-                                        title: data[index]['title'],
-                                        subTitle: data[index]['subTitle'],
+                                        index: data[index],
+                                        title: data[index].title,
+                                        subTitle: data[index].subTitle,
                                       ))),
                           child: ToDoCart(
-                            todo: ToDo.fromFirestore(data[index]),
-                            index: data[index].reference,
+                            todo: data[index],
                           ),
                         );
                       });

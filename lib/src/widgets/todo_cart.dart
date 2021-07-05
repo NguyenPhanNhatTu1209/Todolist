@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todolist/models/todo.dart';
+import 'package:todolist/src/Controllers/todo_controller.dart';
 
 class ToDoCart extends StatefulWidget {
   final ToDo todo;
-  final index;
-  ToDoCart({required this.todo, required this.index});
+  ToDoCart({required this.todo});
   @override
   State<StatefulWidget> createState() {
     return _ToDoCart();
@@ -20,16 +20,14 @@ class _ToDoCart extends State<ToDoCart> {
     super.initState();
   }
 
+  TodoController todoController = TodoController();
+
   doneTask() async {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.update(widget.index, {'status': 'DONE'});
-    });
+    todoController.done(widget.todo.id);
   }
 
   cancelTask() async {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.update(widget.index, {'status': 'CANCEL'});
-    });
+    todoController.delete(widget.todo.id);
   }
 
   @override

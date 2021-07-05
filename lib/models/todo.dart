@@ -1,13 +1,14 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ToDo {
+  final String id;
   final String title;
   final String status;
   final String subTitle;
-  final Timestamp createdAt;
+  final String createdAt;
   ToDo({
+    required this.id,
     required this.title,
     required this.status,
     required this.subTitle,
@@ -15,12 +16,14 @@ class ToDo {
   });
 
   ToDo copyWith({
+    String? id,
     String? title,
     String? status,
     String? subTitle,
-    Timestamp? createdAt,
+    String? createdAt,
   }) {
     return ToDo(
+      id: id ?? this.id,
       title: title ?? this.title,
       status: status ?? this.status,
       subTitle: subTitle ?? this.subTitle,
@@ -30,15 +33,17 @@ class ToDo {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'status': status,
       'subTitle': subTitle,
-      'createdAt': createdAt.toDate().toString(),
+      'createdAt': createdAt.toString(),
     };
   }
 
   factory ToDo.fromMap(Map<String, dynamic> map) {
     return ToDo(
+      id: map['_id'],
       title: map['title'],
       status: map['status'],
       subTitle: map['subTitle'],
@@ -47,6 +52,7 @@ class ToDo {
   }
   factory ToDo.fromFirestore(dynamic map) {
     return ToDo(
+      id: map['_id'],
       title: map['title'],
       status: map['status'],
       subTitle: map['subTitle'],
